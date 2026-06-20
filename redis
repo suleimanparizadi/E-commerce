@@ -1,0 +1,99 @@
+Redis cache:
+
+A server side caching
+
+
+
+
+
+
+cache_key = "products:featured"
+#adding a cache key to avoid sending too much query to database
+
+
+
+
+products = cache.get(cache_key)
+#get the cache
+
+if not products:
+    products = list(
+        Product.objects.filter(is_active=True)
+    )
+    cache.set(cache_key, products, timeout=300)
+     
+ 
+ 
+Category Caching
+
+Product Detail Caching:
+cache_key = f"product:{product_id}"
+#Store serialized product data in Redis
+
+API Rate Limiting
+
+Celery Broker + Result Backend
+
+
+Search Suggestions
+
+
+Recently Viewed Products
+
+Store per-user history
+
+
+Definitely
+Sessions
+Celery broker
+Product list caching
+Product detail caching
+Rate limiting
+
+
+
+Nice Bonus
+Recently viewed products
+Dashboard analytics caching
+
+
+Redis Usage:
+✓ Session storage
+✓ Product catalog caching
+✓ API throttling
+✓ Celery broker
+✓ Analytics caching
+
+
+
+What Should Be Cached?
+Excellent candidates
+
+Homepage:
+
+featured products
+best sellers
+new arrivals
+
+These are requested constantly.
+
+Cache hit rate is high
+
+
+
+Good candidates
+
+Popular categories
+
+
+Bad candidates
+
+Very specific searches
+
+
+✓ Redis Sessions
+✓ Product Detail Cache
+✓ Featured Products Cache
+✓ Category Cache
+✓ Celery Broker
+✓ DRF Rate Limiting

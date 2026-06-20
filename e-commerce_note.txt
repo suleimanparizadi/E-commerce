@@ -1,0 +1,81 @@
+ecommerce/
+│
+├── apps/
+│   ├── accounts/
+│   ├── products/
+│   ├── categories/
+│   ├── cart/
+│   ├── orders/
+		├── models.py
+		├── services.py
+		├── selectors.py
+
+		├── api/
+		│   ├── serializers/
+		│   │   ├── order.py
+		│   │   └── payment.py
+		│   │
+		│   ├── views/
+		│   │   ├── order.py
+		│   │   └── payment.py
+		│   │
+		│   └── urls.py
+│   ├── payments/
+│   ├── reviews/
+│   ├── coupons/
+│   └── notifications/
+│
+├── core/
+│   ├── settings/
+│   ├── permissions/
+│   ├── exceptions/
+│   ├── pagination/
+│   ├── utils/
+│   └── services/
+│
+├── tests/
+│
+├── docker/
+│
+└── requirements/
+
+
+
+
+High value:
+
+Docker
+PostgreSQL
+Redis
+Celery
+AWS S3
+JWT auth
+Swagger/OpenAPI
+GitHub Actions
+Tests
+
+
+Very high value:
+
+Database transactions (select_for_update)
+Query optimization (select_related, prefetch_related)
+Caching strategy
+Rate limiting
+Structured logging
+Monitoring
+
+Toolbar
+pip install django-debug-toolbar
+# to check the query counts
+
+**Django silk
+pip install django-silk
+# Slowest endpoints
+# Query counts
+# SQL execution time
+# Request profiling
+
+
+
+
+
