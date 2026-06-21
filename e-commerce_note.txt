@@ -55,6 +55,10 @@ GitHub Actions
 Tests
 
 
+***Use UUID Field for user primary key(pk)
+# UUID is a globally unique identifier
+# Universally Unique Identifier
+
 Very high value:
 
 Database transactions (select_for_update)
