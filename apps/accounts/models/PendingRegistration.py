@@ -1,7 +1,7 @@
 from django.db import models 
 from django.contrib.auth.hashers import make_password, identify_hasher
 from datetime import timedelta
-from datetime import timezone
+from django.utils import timezone
 
 
 class PendingRegistration(models.Model):
@@ -21,7 +21,7 @@ class PendingRegistration(models.Model):
     date_of_birth = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    expired_at = models.DateTimeField()
+    expired_at = models.DateTimeField(null=True, blank=True)
 
 
 
