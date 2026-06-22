@@ -2,12 +2,15 @@ ecommerce/
 │
 ├── apps/
 │   ├── accounts/
-│   ├── products/
-│   ├── categories/
-│   ├── cart/
-│   ├── orders/
 		├── models.py
+			├── user.py
+			├── manager.py
+			├──OTPModel.py
+		|	
 		├── services.py
+			├── otp.py
+			├── registration.py
+			└── login.py
 		├── selectors.py
 
 		├── api/
@@ -16,10 +19,14 @@ ecommerce/
 		│   │   └── payment.py
 		│   │
 		│   ├── views/
-		│   │   ├── order.py
-		│   │   └── payment.py
+		│   │   ├── registration.py
+		│   │   └── login.py
 		│   │
 		│   └── urls.py
+│   ├── products/
+│   ├── categories/
+│   ├── cart/
+│   ├── orders/
 │   ├── payments/
 │   ├── reviews/
 │   ├── coupons/
@@ -80,6 +87,9 @@ pip install django-silk
 # Request profiling
 
 
+@transaction.atomic makes multiple database operations act as ONE single operation
+they ALL succeed or ALL fail together
 
 
 
+for phone veryfication use the phone number in otp don't need the sessions 
