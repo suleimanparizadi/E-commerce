@@ -77,6 +77,9 @@ class OTPService:
         else:
             return False, "Failed to send OTP. Please try again later."
 
+
+
+
     def verify_otp(self, input_code):
         if not input_code:
             return False, "code is required."
@@ -105,8 +108,13 @@ class OTPService:
             otp.save(update_fields=["attempts"])
             return False, "Invalid code, try again."
 
+
+     
         otp.delete()
         return True, "One time password verified successfully."
+
+
+
 
     @classmethod
     def cleanup_expired(cls):

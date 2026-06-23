@@ -30,15 +30,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     first_name = models.CharField(max_length=125, blank=False)
     last_name = models.CharField(max_length=125, blank=False)
-
-    email = models.EmailField(max_length=225, blank=True, null=True, unique=True)
+    email = models.EmailField(max_length=225, blank=False, null=True, unique=True)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-
     date_of_birth = models.DateTimeField(null=True, blank=True)
 
-    last_login_ip = models.GenericIPAddressField(null=True, blank=True)
     last_login_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)   
@@ -93,11 +90,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         return None
 
-    def update_last_login(self, ip_address):
+    def update_last_login(self):
 
-        self.last_login_ip = ip_address
         self.last_login_at = timezone.now()
-        self.save(update_fields=['last_login_ip', 'last_login_at'])        
+        self.save(update_fields=['last_login_at'])        
 
 
 
