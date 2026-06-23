@@ -1,4 +1,9 @@
 from pathlib import Path
+from datetime import timedelta
+import os
+
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,6 +36,7 @@ INSTALLED_APPS = [
 
     # Third party apps
     'rest_framework',
+    'rest_framework_simplejwt',
     'django_filters',
     'corsheaders',
     'django_redis',
@@ -124,3 +130,32 @@ STATIC_URL = 'static/'
 
 
 AUTH_USER_MODEL = 'accounts.User'
+
+
+AUTHENTICATION_BACKENDS = [
+    'apps.accounts.backends.OTPAuthentication',
+    'django.contrib.auth.backends.ModelBackend',  # keep for admin
+]
+
+
+
+
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,       
+    'BLACKLIST_AFTER_ROTATION': True,    
+    'UPDATE_LAST_LOGIN': True,
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',              
+    'USER_ID_CLAIM': 'user_id',
+}

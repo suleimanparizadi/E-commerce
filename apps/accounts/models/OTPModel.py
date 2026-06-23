@@ -20,6 +20,12 @@ class OTP(models.Model):
         ordering = ['-created_at']
         verbose_name = 'OTP'
         verbose_name_plural = 'OTPs'
+        
+        indexes = [
+        models.Index(
+            fields=['phone_number']
+        )
+    ]
 
 
     def save(self, *args, **kwargs):

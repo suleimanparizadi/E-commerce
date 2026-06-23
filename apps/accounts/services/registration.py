@@ -94,6 +94,6 @@ class RegistrationsService:
 
         pending.delete()
 
-        return success, message
+        return user, message
 
 
