@@ -6,15 +6,14 @@ ecommerce/
 			├── user.py
 			├── manager.py
 			├──OTPModel.py
-		|	
+			
 		├── services.py
 			├── otp.py
 			├── registration.py
 			└── login.py
-		├── selectors.py
-
 		├── api/
 		│   ├── serializers/
+		│   │	
 		│   │   ├── order.py
 		│   │   └── payment.py
 		│   │
@@ -24,6 +23,28 @@ ecommerce/
 		│   │
 		│   └── urls.py
 │   ├── products/
+
+├── models.py
+			├── category.py
+			├── images.py
+			├──products.py
+			
+		├── services.py
+			├── 
+			├── 
+			└── 
+		├── api/
+		│   ├── 
+		│   │  
+		│   │   
+		│   │
+		│   ├── selector/
+		│   │   ├── products.py
+		│   │   
+		│   │
+		│   └── urls.py
+
+
 │   ├── categories/
 │   ├── cart/
 │   ├── orders/

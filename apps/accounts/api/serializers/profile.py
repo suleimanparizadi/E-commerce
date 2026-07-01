@@ -29,7 +29,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(write_only=True)
     new_password = serializers.CharField(write_only=True, min_length=8, 
-                                         validator=[PasswordValidator()])
+                                         validators=[PasswordValidator()])
     confirm_password = serializers.CharField(write_only=True)
 
 
