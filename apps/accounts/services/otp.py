@@ -2,6 +2,7 @@ from apps.accounts.models.OTPModel import OTP
 import random
 from django.utils import timezone
 from datetime import timedelta
+from django.db import transaction
 
 
 class OTPService:
@@ -79,15 +80,15 @@ class OTPService:
 
 
 
-
+    @transaction.atomic
     def verify_otp(self, input_code):
         if not input_code:
             return False, "code is required."
 
         try:
-            otp = OTP.objects.get(phone_number=self.phone_number)
+            otp = OTP.objects.select_for_update().get(phone_number=self.phone_number)
         except OTP.DoesNotExist:
-            return False, "cannot find the one time password for this number."
+            return False, "No active verification code found. Please request a new one."
 
         if otp.is_expired():
             otp.delete()

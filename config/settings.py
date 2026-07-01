@@ -53,6 +53,10 @@ INSTALLED_APPS = [
 
 ]
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -61,6 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware'
+
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -118,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
@@ -133,11 +139,9 @@ AUTH_USER_MODEL = 'accounts.User'
 
 
 AUTHENTICATION_BACKENDS = [
-    'apps.accounts.backends.OTPAuthentication',
-    'django.contrib.auth.backends.ModelBackend',  # keep for admin
+    'apps.accounts.services.otp_authentication.OTPAuthentication',
+    'django.contrib.auth.backends.ModelBackend',
 ]
-
-
 
 
 
@@ -159,3 +163,4 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',              
     'USER_ID_CLAIM': 'user_id',
 }
+

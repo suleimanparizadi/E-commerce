@@ -1,3 +1,5 @@
 from .user import User
 from .OTPModel import OTP
-from .PendingRegistration import PendingRegistration
+from .pending_registration import PendingRegistration
+
+__all__ = ['User', 'OTP', 'PendingRegistration']

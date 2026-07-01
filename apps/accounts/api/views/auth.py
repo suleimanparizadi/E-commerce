@@ -1,7 +1,7 @@
 from rest_framework import views, status
 from rest_framework.response import Response
-from apps.accounts.api.serializers import profile ,auth as auth_serializer
-from apps.accounts.services import registration, login, token, password_service
+from apps.accounts.api.serializers import auth as auth_serializer
+from apps.accounts.services import registration, login, token
 from apps.accounts.permissions import IsAuthenticatedAndVerified
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -84,7 +84,7 @@ class SendLoginOTPView(views.APIView):
         success, message = service.send_otp()
 
         return Response({'message':message},
-                status=status.HTTP_200_OK if success else status.HTTP_400_BAD_REQUEST)
+                status=status.HTTP_200_OK)
     
 
 

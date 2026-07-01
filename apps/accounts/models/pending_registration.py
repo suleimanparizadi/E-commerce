@@ -10,7 +10,7 @@ class PendingRegistration(models.Model):
 
 
 
-    phone_number = models.CharField(max_length=11, unique=True)
+    phone_number = models.CharField(max_length=11)
 
     first_name = models.CharField(max_length=125, blank=False)
     last_name = models.CharField(max_length=125, blank=False)

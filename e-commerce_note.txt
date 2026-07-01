@@ -87,9 +87,53 @@ pip install django-silk
 # Request profiling
 
 
-@transaction.atomic makes multiple database operations act as ONE single operation
-they ALL succeed or ALL fail together
+@transaction.atomic 
+# makes multiple database operations act as ONE single operation
+# they ALL succeed or ALL fail together
 
 
 
-for phone veryfication use the phone number in otp don't need the sessions 
+
+
+
+models Foreign Key:
+
+CASCADE = chain reaction, everything falls.
+
+PROTECT = bodyguard stops you from touching the parent.
+
+SET_NULL = orphan the child, but let it live.
+
+
+object = Model.objects.get(id=example_id)
+# it will save every model field in this object 
+# but for Foreign Key and many to many relations it's only saves the id of them 
+
+
+
+object = Model.objects.get(id=example_id).select_related()
+# it will return every thing in the object even the Foreign Key fields 
+# no need to query for every thing on that model
+
+object = Model.objects.get(id=example_id).select_related().prefetch_related()
+# just like earlier but this prefetch_related() will also return many to many relations too
+
+
+
+
+return Product.objects.filter(
+        category__slug = category_slug,
+         is_active = True,  
+         ).select_related('category', 'cpu')
+         
+# select_related not work here first because the filter runs first
+# the two under score __ means to follow the slug_id in the object and get the category
+
+
+
+get_object_or_404
+# only return one object
+
+
+iexact means
+case-insensitive exact match.

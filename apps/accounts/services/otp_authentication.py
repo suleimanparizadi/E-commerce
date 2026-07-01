@@ -19,7 +19,7 @@ class OTPAuthentication(BaseBackend):
         success, message = otp_service.verify_otp(otp_code)
 
         if not success:
-            raise PermissionDenied(message)
+            return None
         
 
         try:
