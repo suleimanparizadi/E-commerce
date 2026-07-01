@@ -29,6 +29,9 @@ class RegistrationsService:
         
 
 
+        if User.objects.select_for_update().filter(phone_number=self.phone_number).first():
+            raise ValidationError("this user is already registerd")
+
     
         if User.objects.filter(phone_number=self.phone_number).exists():
             raise ValidationError("This phone number is already registered.")
@@ -75,7 +78,7 @@ class RegistrationsService:
         success, message = self.otp_service.verify_otp(code)
 
         if not success:
-            return False, message
+            return None, message
         
 
         user = User.objects.create_user(

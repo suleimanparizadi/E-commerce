@@ -26,13 +26,14 @@ class PasswordLoginService:
             user = User.objects.get(phone_number=self.phone_number)        
        
         except User.DoesNotExist:
-            raise AuthenticationFailed("Invalid phone number or password.")        
+            return False, "Invalid phone number or password."        
         
         if not user.is_active:
-            raise AuthenticationFailed("This account has been deactivated.")
+            return False, "This account has been deactivated."
         
+
         if not user.check_password(self.password):
-            raise AuthenticationFailed("Incorrect password")
+            return False, "Invalid phone number or password."
         
 
         user.update_last_login()
@@ -62,7 +63,7 @@ class OTPLoginService:
             return False, message
       
 
-        return False, "OTP sent successfully."
+        return False, "Unable to process request. Please try again later."
             
 
     def verify_otp(self, input_code):
@@ -77,11 +78,11 @@ class OTPLoginService:
             try:
                 user = User.objects.get(phone_number=self.phone_number)
             except User.DoesNotExist:
-                return "Accounts not found"
+                return None, "Accounts not found"
             
             
             user.update_last_login()
 
             return user, message
         
-        return success, message
+        return None, message

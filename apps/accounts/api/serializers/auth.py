@@ -18,10 +18,7 @@ class SendLoginOTPSerializer(serializers.Serializer):
 
 
 class VerifyLoginOTPSerializer(serializers.Serializer):
-    phone_number = serializers.CharField(
-        max_length=11,
-        validators=[PhoneNumberValidator()]
-    )
+   
     code = serializers.CharField(
         max_length=6,
         validators=[OTPCodeValidator()]
@@ -56,4 +53,5 @@ class InitiateRegistrationSerializer(serializers.Serializer):
             raise serializers.ValidationError({
                 'password_confirm': "Passwords must match."
             })
+        data.pop('password_confirm', None)
         return data
