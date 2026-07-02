@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'storages',
     'debug_toolbar',
     'silk',
-
+    'rest_framework_simplejwt.token_blacklist',
 
 
     # Local apps

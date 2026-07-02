@@ -12,7 +12,7 @@ class ProfileView(views.APIView):
 
     def get(self, request):
 
-        serializer = profile.UserProfileSerializer(request.data)
+        serializer = profile.UserProfileSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 
@@ -38,8 +38,8 @@ class ChangePasswordView(views.APIView):
         serializer = profile.ChangePasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        service = password_service(request.user)
-        success, message = service.change_password(
+        service = password_service.ChangePasswordService(request.user)
+        result, message = service.change_password(
             old_password=serializer.validated_data['old_password'],
             new_password=serializer.validated_data['new_password'],
             confirm_password=serializer.validated_data['confirm_password']
@@ -47,7 +47,7 @@ class ChangePasswordView(views.APIView):
         
         return Response(
             {'message': message},
-            status=status.HTTP_200_OK if success else status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_200_OK if result else status.HTTP_400_BAD_REQUEST
         )
 
 

@@ -17,7 +17,7 @@ class InitiateRegistrationView(views.APIView):
         data = serializer.validated_data
         service = registration.RegistrationsService(data['phone_number'])
 
-        success, message = service.initiate_registration(
+        result, message = service.initiate_registration(
             first_name=data['first_name'],
             last_name=data['last_name'],
             password=data['password'],
@@ -26,7 +26,7 @@ class InitiateRegistrationView(views.APIView):
 
         )
 
-        return Response({'message':message}, status=status.HTTP_202_ACCEPTED if success 
+        return Response({'message':message}, status=status.HTTP_202_ACCEPTED if result 
                         else status.HTTP_400_BAD_REQUEST)
 
 
@@ -42,12 +42,14 @@ class VerifyRegistrationView(views.APIView):
 
 
         service = registration.RegistrationsService(serializer.validated_data['phone_number'])
-        user ,message = service.verify_and_create_user(serializer.validated_data['code'])
-        user_token = token.generate_token(user)
+        result ,message = service.verify_and_create_user(serializer.validated_data['code'])
+        if result:
+            user_token = token.generate_token(result)
 
-        return Response({'message':message,
+            return Response({'message':message,
                          'tokens':user_token},status=status.HTTP_201_CREATED)
-    
+
+        return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -64,12 +66,14 @@ class PasswordLoginView(views.APIView):
             serializer.validated_data['phone_number'],
             serializer.validated_data['password'])
         
-        _, user = service.login()
-        user_token = token.generate_token(user)
+        result, message = service.login()
 
+        if result:
+            user_token = token.generate_token(result)
        
-        return Response({'tokens':user_token}, status=status.HTTP_200_OK)
-  
+            return Response({'tokens':user_token, 'message':message}, status=status.HTTP_200_OK)
+
+        return Response({'message':message}, status=status.HTTP_400_BAD_REQUEST)
     
 
 class SendLoginOTPView(views.APIView):
@@ -81,10 +85,9 @@ class SendLoginOTPView(views.APIView):
         serializer.is_valid(raise_exception=True)
 
         service = login.OTPLoginService(serializer.validated_data['phone_number'])
-        success, message = service.send_otp()
+        result, message = service.send_otp()
 
-        return Response({'message':message},
-                status=status.HTTP_200_OK)
+        return Response({'message':message},status=status.HTTP_200_OK)
     
 
 
@@ -95,13 +98,17 @@ class VerifyLoginOTPView(views.APIView):
         serializer.is_valid(raise_exception=True)
 
         service = login.OTPLoginService(serializer.validated_data['phone_number'])
-        user, message = service.verify_otp(serializer.validated_data['code'])
+        
+        result, message = service.verify_otp(serializer.validated_data['code'])
+        
+        
+        if result:
+            user_token = token.generate_token(result)
 
-        user_token = token.generate_token(user)
-
-        return Response({'message':message, 'tokens':user_token},
+            return Response({'message':message, 'tokens':user_token},
                         status=status.HTTP_200_OK)
-    
+
+        return Response({'message':message}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
