@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from apps.accounts.models import PendingRegistration
 from apps.accounts.services import otp
-
+from django.db import IntegrityError
 
 User = get_user_model()
 
@@ -28,17 +28,26 @@ class RegistrationsService:
                               email=None, date_of_birth=None):
         
 
-
         if User.objects.select_for_update().filter(phone_number=self.phone_number).first():
-            raise ValidationError("this user is already registerd")
+            return False, "this user is already registerd"
 
-    
-        if User.objects.filter(phone_number=self.phone_number).exists():
-            raise ValidationError("This phone number is already registered.")
+        if  not first_name :
+            return False, 'first name is required.'
+        
+        if  not last_name :
+            return False, 'last name is required.'
+
+
+        if not password :
+            return False, 'password is required.'
+
+        if not self.phone_number :
+            return False, 'phone number is required.'
+
 
 
         if email and User.objects.filter(email=email).exists():
-            raise ValidationError("This email is already registered.")
+            return False, "This email is already registered."
         
 
 
@@ -72,31 +81,40 @@ class RegistrationsService:
             pending = PendingRegistration.objects.get(phone_number=self.phone_number)
 
         except PendingRegistration.DoesNotExist:
-            raise ValidationError("No pending registration found. Please start the registration process again.")
+            return False, "No pending registration found. Please start the registration process again."
 
 
         success, message = self.otp_service.verify_otp(code)
 
         if not success:
-            return None, message
+            return False, message
+        
+        try:
+            user = User.objects.create_user(
+                phone_number = self.phone_number,
+                first_name = pending.first_name,
+                last_name = pending.last_name,
+                password = None,
+                email=pending.email
+            )
+            user.password = pending.password
+
+            if pending.date_of_birth:
+                user.date_of_birth = pending.date_of_birth
+
+            user.save(update_fields=['date_of_birth','password'])
+
+            pending.delete()
+
+            return user, message
         
 
-        user = User.objects.create_user(
-            phone_number = self.phone_number,
-            first_name = pending.first_name,
-            last_name = pending.last_name,
-            password = None,
-            email=pending.email
-        )
-        user.password = pending.password
+                # to avoid go around database uniqueness 
+        except IntegrityError:
 
-        if pending.date_of_birth:
-            user.date_of_birth = pending.date_of_birth
+            # Transaction is broken and will roll back automatically.
+            # OTP deletion and any other changes are undone.
 
-        user.save(update_fields=['date_of_birth','password'])
-
-        pending.delete()
-
-        return user, message
+            return False, "A user with this email or phone number already exists."
 
 
