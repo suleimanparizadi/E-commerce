@@ -9,7 +9,7 @@ class ProductImage(models.Model):
         on_delete=models.CASCADE,
         related_name='images'
     )
-    images= models.ImageField(upload_to='products/gallery/%Y/%m/')
+    image= models.ImageField(upload_to='products/gallery/%Y/%m/')
     alt_text = models.CharField(max_length=200, blank=True)    
     created_at = models.DateTimeField(auto_now_add=True)
     

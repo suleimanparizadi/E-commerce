@@ -65,4 +65,4 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         fields = ['name', 'slug', 'brand', 'price', 'thumbnail', 
                   'ram', 'storage', 'gpu', 'is_in_stock',
                   'description', 'cpu', 'on_board_gpu',
-                  'touch_screen', 'display_size', 'category', 'images']
+                  'touch_screen', 'display_size', 'category', 'image']
