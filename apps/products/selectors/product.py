@@ -1,7 +1,7 @@
 from apps.products.models.products import Product
 from django.shortcuts import get_object_or_404
 from django.db.models import QuerySet
-
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 class ProductSelector:
     """
@@ -87,6 +87,32 @@ class ProductSelector:
 
         return product.select_related('cpu', 'category').prefetch_related('images')
     
+
+
+    @staticmethod
+    def search_product(query):
+
+        if not query:
+
+            return Product.objects.none()
+        
+        search_vector = SearchVector(
+                    'name',
+                    'brand',
+                    'description',
+                    'gpu',
+                    'cpu__manufacturer',     
+                    'cpu__series',
+                    'cpu__model'
+                    )
+
+
+        search_query = SearchQuery(query)
+
+
+        return Product.objects.annotate(rank=SearchRank(
+            search_vector, search_query)).filter(rank__gt=0).order_by('-rank').select_related(
+                    'category','cpu').prefetch_related('images')
 
 
 
