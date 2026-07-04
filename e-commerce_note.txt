@@ -159,6 +159,8 @@ get_object_or_404
 iexact means
 case-insensitive exact match.
 
+icontains = case-insensitive contains (substring search)
+
 
 *** return None != return False *** 
 
