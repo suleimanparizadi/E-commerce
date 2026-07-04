@@ -164,4 +164,40 @@ icontains = case-insensitive contains (substring search)
 
 *** return None != return False *** 
 
+search:
 
+    @staticmethod
+    def search_product(query):
+
+        if not query:
+
+            return Product.objects.none()
+        
+        
+        # fields need to be searched:
+        search_vector = SearchVector(
+                    'name',
+                    'brand',
+                    'description',
+                    'gpu',
+                    'cpu__manufacturer',     
+                    'cpu__series',
+                    'cpu__model'
+                    )
+
+
+        search_query = SearchQuery(query)
+	# translate the user search to query
+
+        return Product.objects.annotate(rank=SearchRank(search_vector, search_query)
+                                 ).filter(rank__gt=0).order_by('-rank')
+
+	# annotate: do the calculation inside the database
+	# add a rank column to database temporarly
+	# search what user said into the fields we give the search vector
+	# and rank them by 0 to 1
+	# each objects with higher rank then 0 will return	
+	
+	
+	request.query_params:
+	When a user visits a URL with ? in it, everything after the ? is called the query string.
