@@ -35,6 +35,7 @@ class Product(models.Model):
     storage = models.PositiveIntegerField()
     on_borad_gpu = models.BooleanField()
     gpu = models.CharField( max_length=50)
+    touch_screen = models.BooleanField()
     display_size = models.DecimalField(
         max_digits=4,
         decimal_places=1,
