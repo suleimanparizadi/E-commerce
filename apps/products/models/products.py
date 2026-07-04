@@ -33,7 +33,7 @@ class Product(models.Model):
     # Specifications
     ram = models.PositiveSmallIntegerField()
     storage = models.PositiveIntegerField()
-    on_borad_gpu = models.BooleanField()
+    on_board_gpu = models.BooleanField()
     gpu = models.CharField( max_length=50)
     touch_screen = models.BooleanField()
     display_size = models.DecimalField(
