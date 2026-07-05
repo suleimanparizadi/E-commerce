@@ -20,7 +20,7 @@ class ProductSelectorTests(TestCase):
             cores=14
         )
 
-        self.product = Product.objects.create(
+        self.product1 = Product.objects.create(
             category=self.category,
             cpu=self.cpu,
             name="Lenovo ThinkPad",
@@ -35,75 +35,7 @@ class ProductSelectorTests(TestCase):
             touch_screen= False
         )
 
-
-    def test_get_product_by_slug(self):
-
-        product = ProductSelector.get_product_by_slug('lenovo-thinkpad')       
-        self.assertEqual(product.id, self.product.id)
-
-
-
-    def test_get_product_by_id(self):
-
-        product = ProductSelector.get_product_by_id(self.product.id)
-        self.assertEqual(product.id, self.product.id)
-
-    
-    def test_get_active_product(self):
-
-        product = ProductSelector.get_active_products()
-        self.assertEqual(product.count(), 1)
-
-
-    def test_get_active_products_excludes_inactive(self):
-
-        Product.objects.create(
-            category=self.category,
-            cpu=self.cpu,
-            name="Inactive Laptop",
-            brand="Test",
-            price=10000000,
-            ram=8,
-            storage=256,
-            gpu="Integrated",
-            slug="inactive-laptop",
-            is_active=False,
-        )
-        
-        products = ProductSelector.get_active_products()
-        
-        self.assertEqual(products.count(), 1)
-        self.assertEqual(products.first().id, self.product.id)
-
-
-
-    def test_filter_by_brand(self):
-
-        Product.objects.create(
-            category=self.category,
-            cpu=self.cpu,
-            name="test Laptop",
-            brand="Lenovo",
-            price=10000000,
-            ram=8,
-            storage=256,
-            gpu="Integrated",
-            slug="inactive-laptop",
-            is_active=True,
-        )
-
-
-        product = ProductSelector.filter_product(brand='Lenovo')
-
-        self.assertTrue(product)
-        self.assertEqual(product.count(), 2)
-
-
-    
-    def test_filter(self):
-
-
-        Product.objects.create(
+        self.product2 = Product.objects.create(
             category=self.category,
             cpu=self.cpu,
             name="Lenovo Laptop",
@@ -114,7 +46,8 @@ class ProductSelectorTests(TestCase):
             gpu="RTX 4060",
             is_active=True,
         )
-        Product.objects.create(
+
+        self.product3 = Product.objects.create(
             category=self.category,
             cpu=self.cpu,
             name="Lenovo Laptop",
@@ -127,7 +60,72 @@ class ProductSelectorTests(TestCase):
             )
 
 
+        self.inactive_product =  Product.objects.create(
+            category=self.category,
+            cpu=self.cpu,
+            name="Inactive Laptop",
+            brand="Test",
+            price=10000000,
+            ram=8,
+            storage=256,
+            gpu="Integrated",
+            slug="inactive-laptop",
+            is_active=False,
+        )
+
+
+
+    def test_get_product_by_slug(self):
+
+        product = ProductSelector.get_product_by_slug('lenovo-thinkpad')       
+        self.assertEqual(product.id, self.product1.id)
+
+
+
+    def test_get_product_by_id(self):
+
+        product = ProductSelector.get_product_by_id(self.product1.id)
+        self.assertEqual(product.id, self.product1.id)
+
+    
+    def test_get_active_product(self):
+
+        product = ProductSelector.get_active_products()
+        self.assertEqual(product.count(), 3)
+
+
+
+    def test_filter_by_brand(self):
+
+
+        product = ProductSelector.filter_product(brand='Lenovo')
+
+        self.assertTrue(product)
+        self.assertEqual(product.count(), 3)
+
+
+    
+    def test_filter(self):
+
+        
         product = ProductSelector.filter_product(brand="Lenovo", ram=16, storage=512)
 
         self.assertEqual(product.count(), 2)
-        
+
+
+
+
+    def test_serach_find_match(self):
+
+        product = ProductSelector.search_product('ThinkPad')
+
+        self.assertEqual(product.count(), 1)
+        self.assertEqual(product.first().name, 'Lenovo ThinkPad')
+
+    
+    def test_serach_not_match(self):
+
+        product = ProductSelector.search_product('MacBook')
+
+        self.assertEqual(product.count(), 0)
+    
