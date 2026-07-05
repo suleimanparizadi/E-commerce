@@ -53,7 +53,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 class ProductDetailSerializer(serializers.ModelSerializer):
 
-    images = ProductImageSerializer(many=True, read_only=True)
+    image = ProductImageSerializer(many=True, read_only=True)
     cpu = CPUSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
 
