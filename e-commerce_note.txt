@@ -200,4 +200,12 @@ search:
 	
 	
 	request.query_params:
-	When a user visits a URL with ? in it, everything after the ? is called the query string.
+	# When a user visits a URL with ? in it, everything after the ? is called the query string.
+	
+	
+	
+	
+	
+the rule for the urls:
+
+*** Hard-coded paths (strings) go at the top. Dynamic paths (with < > converters) go at the bottom. If two dynamic paths could conflict, the more specific one goes first

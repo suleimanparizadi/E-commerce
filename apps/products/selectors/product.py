@@ -54,10 +54,10 @@ class ProductSelector:
             product = product.filter(category__slug=category_slug)
 
         if ram:
-            product = product.filter(ram=ram)
+            product = product.filter(ram=int(ram))
 
         if storage:
-            product = product.filter(storage=storage)
+            product = product.filter(storage=int(storage))
 
         if gpu:
             product = product.filter(gpu=gpu)
@@ -67,20 +67,20 @@ class ProductSelector:
 
         
         if min_price is not None:
-            product = product.filter(price__gte=min_price)
+            product = product.filter(price__gte=int(min_price))
 
         if max_price is not None: # <--- then python treat 0 as a real value too, not a False
-            product = product.filter(price__lte=max_price)
+            product = product.filter(price__lte=int(max_price))
 
         if in_stock_only:
             product = product.filter(stock__gt=0)
 
         
-        if min_display_size:
-            product = product.filter(display_size__gte=min_display_size)
+        if min_display_size is not None:
+            product = product.filter(display_size__gte=float(min_display_size))
 
-        if max_display_size:
-            product = product.filter(display_size__lte=max_display_size)
+        if max_display_size is not None:
+            product = product.filter(display_size__lte=float(max_display_size))
 
         if touch_screen is not None:
             product = product.filter(touch_screen=touch_screen)

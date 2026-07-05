@@ -9,7 +9,7 @@ from debug_toolbar.toolbar import debug_toolbar_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/accounts/',include('apps.accounts.api.urls', namespace='accounts')),
-
+    path('api/v1/product/', include('apps.product.api.url', namespace='product')),
 
 ]+ debug_toolbar_urls()
 
