@@ -209,3 +209,8 @@ search:
 the rule for the urls:
 
 *** Hard-coded paths (strings) go at the top. Dynamic paths (with < > converters) go at the bottom. If two dynamic paths could conflict, the more specific one goes first
+
+
+
+=============TEST==================================================
+** setUpTestData() creates the data once for the whole test class, making the tests much faster.
