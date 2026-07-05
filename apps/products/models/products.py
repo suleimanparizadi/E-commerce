@@ -72,6 +72,13 @@ class Product(models.Model):
     @property
     def is_in_stock(self):
         return self.stock > 0
+    
+    @property
+    def average_rating(self):
+        return self.reviews.aggregate(avg=models.Avg('rating'))['avg']
+
+
+
 
 class CPU(models.Model):
     
