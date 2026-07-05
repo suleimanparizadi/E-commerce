@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
-from apps.products.api.views import product as product_view
 from apps.products.models.products import Product, CPU
 from apps.products.models.category import Category
 from rest_framework import status
@@ -118,6 +117,10 @@ class TestProductView(TestCase):
 
 
     def test_filter_product(self):
+
+        """
+            Test to find only active product by a filter
+        """
 
         response = self.client.get(self.search_url, {'brand': 'Lenovo'})
 
