@@ -8,6 +8,15 @@ User = get_user_model()
 
 class ReviewSerializer(serializers.ModelSerializer):
 
+
+    """
+    Used for CREATE and UPDATE operations.
+    Accepts rating and comment from the user.
+    Product is set by the view (read-only to the user).
+
+    """
+
+
     class Meta:
         model = Review
 
@@ -19,6 +28,13 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ReviewUserSerializer(serializers.ModelSerializer):
 
+    """
+        Nested serializer for displaying review author info.
+        Shows only first_name and last_name — no phone number or email.
+        Used inside ReviewListSerializer.
+    """
+
+
 
     class Meta:
         model = User
@@ -27,7 +43,18 @@ class ReviewUserSerializer(serializers.ModelSerializer):
 
 
 
+
+
 class ReviewListSerializer(serializers.ModelSerializer):
+
+
+    """
+    Used for GET (read-only) operations.
+    Displays a review with nested user info, rating, comment, and created_at.
+    All fields are read-only — not used for creating or updating.
+    
+    """
+
 
     user = ReviewUserSerializer(read_only=True)
 
