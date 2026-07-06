@@ -11,7 +11,7 @@ User = get_user_model()
 class ReviewSelector:
 
     @staticmethod
-    def get_review_for_product(product_slug : str) -> QuerySet:
+    def get_reviews_for_product(product_slug : str) -> QuerySet | None:
         
 
         try:
