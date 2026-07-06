@@ -23,13 +23,13 @@ class RegistrationsService:
         self.phone_number = phone_number
         self.otp_service = otp.OTPService(phone_number)
 
-    @transaction.atomic # All happenned together or all cancelled togather 
+    @transaction.atomic # All happened together or all cancelled together 
     def initiate_registration(self, first_name, last_name, password,
                               email=None, date_of_birth=None):
         
 
         if User.objects.select_for_update().filter(phone_number=self.phone_number).first():
-            return False, "this user is already registerd"
+            return False, "this user is already registered"
 
         if  not first_name :
             return False, 'first name is required.'
