@@ -27,5 +27,5 @@ class HasPurchasedProduct(permissions.BasePermission):
             after order app is completed
         """
 
-        ...
+        return True
 

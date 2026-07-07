@@ -5,7 +5,8 @@ from apps.reviews.selectors.review import ReviewSelector
 from apps.accounts.permissions import IsAuthenticatedAndVerified
 from apps.reviews.permissions import IsOwnerOrAdmin, HasPurchasedProduct
 from apps.reviews.service.review_service import ReviewService
-
+from apps.reviews.models.review_model import Review
+from django.shortcuts import get_object_or_404
 
 class ListProductReviewsView(views.APIView):
 
@@ -73,13 +74,13 @@ class CreateReviewView(views.APIView):
         serializer.is_valid(raise_exception=True)
 
         service = ReviewService(request.user)
-        result, message = service.create_review(product_slug=product_slug, **serializer.data)
+        result, message = service.create_review(product_slug=product_slug, **serializer.validated_data)
 
         if not result:
             return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = review_serializer.ReviewListSerializer(result)
-        return Response({'message':message, 'data':serializer.data}, status=status.HTTP_201_CREATED)
+        serializer_data = review_serializer.ReviewListSerializer(result)
+        return Response({'message':message, 'data':serializer_data.data}, status=status.HTTP_201_CREATED)
 
 
 
@@ -106,24 +107,28 @@ class ReviewDetailView(views.APIView):
         serializer.is_valid(raise_exception=True)
 
         service = ReviewService(request.user)
-        result, message = service.update_review(review_id=review_id, **serializer.data)
+        result, message = service.update_review(review_id=review_id, **serializer.validated_data)
 
-        if result:
-            return Response({'message':message, 'review':result},
-                     status=status.HTTP_200_OK)
-        
-        
-        serializer = review_serializer.ReviewListSerializer(result)
-        return Response({'message':message, 'data':serializer.data}, status=status.HTTP_400_BAD_REQUEST)
+        if not result:
 
+            return Response({'message':message}, status=status.HTTP_400_BAD_REQUEST)
+
+        self.check_object_permissions(request, review)
+        serializer_data = review_serializer.ReviewListSerializer(result)
+        return Response({'message':message, 'review':serializer_data.data},
+                    status=status.HTTP_200_OK)
+    
+    
 
 
 
     def delete(self, request, review_id:int):
 
         service = ReviewService(request.user)
+        review = get_object_or_404(Review, id=review_id)
         success, message = service.delete_review(review_id)
-
+        
+        self.check_object_permissions(request, review)
         return Response({'message':message},
                      status=status.HTTP_200_OK if success else status.HTTP_400_BAD_REQUEST)
 
