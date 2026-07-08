@@ -214,3 +214,10 @@ the rule for the urls:
 
 =============TEST==================================================
 ** setUpTestData() creates the data once for the whole test class, making the tests much faster.
+
+
+
+existing.save(update_fields=['quantity'])
+
+update_fields is a optimization fir save existing methods
+
