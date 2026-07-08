@@ -27,7 +27,11 @@ class Review(models.Model):
     class Meta:
             
             # prevents users from reviewing the same product more than once
-            unique_together = [('user', 'product')]
+            constraints = models.UniqueConstraint(
+                 fields=['user', 'product'],
+                 name='unique_review_product'
+            )
+
             ordering = ['-created_at']
 
 
