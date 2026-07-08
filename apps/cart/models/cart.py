@@ -32,7 +32,7 @@ class CartItem(models.Model):
     ])
 
   
-    # make sure on a cart there is not more then a one product(if it is then raise the quantity)
+    # make sure on a cart there is not more then a one product(if it is then increment the quantity)
     class Meta:
 
         constraints = [
@@ -44,3 +44,7 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.cart} - {self.product} - {self.quantity}"
+    
+
+
+    
