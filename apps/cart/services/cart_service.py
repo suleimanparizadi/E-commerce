@@ -1,4 +1,4 @@
-from apps.cart.models.cart import Cart, CartItem
+from apps.cart.models.cart import Cart, CartItem 
 from apps.products.models.products import Product
 from django.db import transaction
 
@@ -9,7 +9,6 @@ class CartService:
 
     def __init__(self, request):
         self.request = request
-        
 
 
     def _get_or_create_cart(self):
@@ -57,8 +56,8 @@ class CartService:
             if not success:
                 return False, message
             
-            if existing.quantity + quantity > 5:
-                return False, "Maximum 5 units per product allowed."
+            if existing.quantity + quantity > CartItem.MAX_ORDER_QUANTITY:
+                return False, f"Maximum {CartItem.MAX_ORDER_QUANTITY} units per product allowed."
             
             
             existing.quantity += quantity
@@ -77,8 +76,8 @@ class CartService:
         if quantity < 1:
             return False, "Quantity must be at least 1." 
         
-        if quantity > 5:
-            return False, "Maximum 5 units per product allowed."
+        if quantity > CartItem.MAX_ORDER_QUANTITY:
+            return False, f"Maximum {CartItem.MAX_ORDER_QUANTITY} units per product allowed."
 
         cart = self._get_or_create_cart()
 
@@ -155,7 +154,7 @@ class CartService:
                 if not success:
                     return False, message
 
-                new_quantity = min(existing.quantity + item.quantity, 5)
+                new_quantity = min(existing.quantity + item.quantity, CartItem.MAX_ORDER_QUANTITY)
                 existing.quantity = new_quantity
                 existing.save(update_fields=['quantity'])
             else:
