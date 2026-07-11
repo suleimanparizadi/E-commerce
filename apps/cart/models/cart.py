@@ -25,10 +25,12 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
 
+    MAX_ORDER_QUANTITY = 5
+
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField(validators=[
-        MinValueValidator(1), MaxValueValidator(5)
+        MinValueValidator(1), MaxValueValidator(MAX_ORDER_QUANTITY)
     ])
 
   
