@@ -46,5 +46,3 @@ class CartItem(models.Model):
         return f"{self.cart} - {self.product} - {self.quantity}"
     
 
-
-    

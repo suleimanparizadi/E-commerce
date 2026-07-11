@@ -1,5 +1,9 @@
 from apps.cart.models.cart import Cart, CartItem
 from apps.products.models.products import Product
+from django.db import transaction
+
+
+
 
 class CartService:
 
@@ -11,7 +15,7 @@ class CartService:
     def _get_or_create_cart(self):
 
         if self.request.user.is_authenticated:
-            cart = Cart.objects.get_or_create(user=self.request.user)
+            cart, _ = Cart.objects.get_or_create(user=self.request.user)
 
         else:
             session_key = self.request.session.session_key
@@ -19,14 +23,23 @@ class CartService:
                 self.request.session.create()
                 session_key = self.request.session.session_key
 
-            cart = Cart.objects.get_or_create(session_key=session_key)
+            cart , _ = Cart.objects.get_or_create(session_key=session_key)
         
         return cart
     
 
+    @staticmethod
+    def _check_stock(product, requested_quantity):
+
+        if product.stock < requested_quantity:
+            return False, f"only {product.stock} items left in the stock"
+
+        return True, None
+
+
     def add_item(self, product_slug, quantity=1):       
 
-        cart, _ = self._get_or_create_cart()
+        cart = self._get_or_create_cart()
 
         try:
             product = Product.objects.get(is_active=True, slug=product_slug)
@@ -35,16 +48,27 @@ class CartService:
             return False, "Cannot find the product"
         
         existing = CartItem.objects.filter(cart=cart,product=product).first()
+
         if existing:
+
+            total_quantity = existing.quantity + quantity
+            success, message = CartService._check_stock(product, total_quantity)
+
+            if not success:
+                return False, message
+            
             if existing.quantity + quantity > 5:
                 return False, "Maximum 5 units per product allowed."
             
+            
             existing.quantity += quantity
             existing.save(update_fields=['quantity'])
+            return existing, "Quantity updated."
+        
+        else:
+            item = CartItem.objects.create(cart=cart, product=product, quantity=quantity)
 
-        item = CartItem.objects.create(cart=cart, product=product, quantity=quantity)
-
-        return item, "Item added to cart."
+            return item, "Item added to cart."
     
 
 
@@ -56,7 +80,7 @@ class CartService:
         if quantity > 5:
             return False, "Maximum 5 units per product allowed."
 
-        cart, _ = self._get_or_create_cart()
+        cart = self._get_or_create_cart()
 
         try:
             item = CartItem.objects.get(id=item_id, cart=cart)
@@ -64,6 +88,12 @@ class CartService:
         except CartItem.DoesNotExist:
             return False, "Item not found in your cart."
         
+        
+        success, message = CartService._check_stock(item.product, quantity)
+        if not success:
+            return False, message
+
+
         item.quantity = quantity
         item.save(update_fields=['quantity'])
 
@@ -75,7 +105,7 @@ class CartService:
     def remove_item(self, item_id):
 
         
-        cart, _ = self._get_or_create_cart()
+        cart = self._get_or_create_cart()
 
         try:
             item = CartItem.objects.get(id=item_id, cart=cart)
@@ -90,41 +120,50 @@ class CartService:
 
 
     def clear_cart(self):
-        ...
+        
+        cart = self._get_or_create_cart()
+        cart.delete()
+       
+        return True ,"Cart successfully removed"
 
 
 
+
+
+    @transaction.atomic
     @staticmethod
     def merge_carts(session_key, user):
-
         if not session_key:
             return False, "No guest cart to merge."
         
-
         try:
-            guest_cart = Cart.objects.get(session_key=session_key)
-        
+            guest_cart = Cart.objects.select_for_update().get(session_key=session_key)
         except Cart.DoesNotExist:
             return False, "No guest cart found."
         
-
-        user_cart = Cart.objects.get_or_create(user=user)
-
-        for item in guest_cart.items.all():
-
-            existing = user_cart.items.filter(product=item.product).first()
-
-            if existing:
-                if existing.quantity + item.quantity > 5:
-                    return False, "Maximum 5 units per product allowed."
-                existing.quantity += item.quantity
-                existing.save(update_fields=['quantity'])
-            
-
+        user_cart, _ = Cart.objects.select_for_update().get_or_create(user=user)
         
+        for item in guest_cart.items.all():
+            existing = user_cart.items.filter(product=item.product).first()
+           
+            if existing:
+                    
+                requested_quantity = existing.quantity + item.quantity
+
+                success, message = CartService._check_stock(item.product, requested_quantity)
+
+                if not success:
+                    return False, message
+
+                new_quantity = min(existing.quantity + item.quantity, 5)
+                existing.quantity = new_quantity
+                existing.save(update_fields=['quantity'])
+            else:
+                item.cart = user_cart
+                item.save(update_fields=['cart'])
+        
+        guest_cart.delete()
+        return user_cart, "Carts merged successfully."
+
                 
 
-
-
-
-        
