@@ -150,6 +150,7 @@ return Product.objects.filter(
 # select_related not work here first because the filter runs first
 # the two under score __ means to follow the slug_id in the object and get the category
 
+# prefetch_related work revers of select_related
 
 
 get_object_or_404
@@ -190,7 +191,7 @@ search:
 	# translate the user search to query
 
         return Product.objects.annotate(rank=SearchRank(search_vector, search_query)
-                                 ).filter(rank__gt=0).order_by('-rank')
+                                 ).filter(rank__gte=0).order_by('-rank')
 
 	# annotate: do the calculation inside the database
 	# add a rank column to database temporarly
@@ -219,7 +220,7 @@ the rule for the urls:
 
 existing.save(update_fields=['quantity'])
 
-update_fields is a optimization fir save existing methods
+update_fields is a optimization for save existing methods
 
 
 

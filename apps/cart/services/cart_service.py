@@ -56,7 +56,7 @@ class CartService:
             if not success:
                 return False, message
             
-            if existing.quantity + quantity > CartItem.MAX_ORDER_QUANTITY:
+            if total_quantity > CartItem.MAX_ORDER_QUANTITY:
                 return False, f"Maximum {CartItem.MAX_ORDER_QUANTITY} units per product allowed."
             
             
@@ -132,6 +132,7 @@ class CartService:
     @transaction.atomic
     @staticmethod
     def merge_carts(session_key, user):
+
         if not session_key:
             return False, "No guest cart to merge."
         
@@ -154,7 +155,7 @@ class CartService:
                 if not success:
                     return False, message
 
-                new_quantity = min(existing.quantity + item.quantity, CartItem.MAX_ORDER_QUANTITY)
+                new_quantity = min(requested_quantity, CartItem.MAX_ORDER_QUANTITY)
                 existing.quantity = new_quantity
                 existing.save(update_fields=['quantity'])
             else:

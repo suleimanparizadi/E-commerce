@@ -63,3 +63,6 @@ class UpdateItemSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(
         min_value=1, max_value=CartItem.MAX_ORDER_QUANTITY
     )
+
+
+    
