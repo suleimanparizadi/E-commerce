@@ -75,7 +75,7 @@ class CartViewTests(TestCase):
             slug='dell-xps-15',
             description='Premium ultrabook',
             price=45000000,
-            stock=5,
+            stock=2,
             ram=16,
             storage=512,
             on_board_gpu=True,
@@ -85,25 +85,8 @@ class CartViewTests(TestCase):
             thumbnail='products/thumbnails/test2.jpg'
         )
         
-        self.out_of_stock_product = Product.objects.create(
-            category=self.category,
-            cpu=self.cpu,
-            brand='HP',
-            name='HP Pavilion',
-            slug='hp-pavilion',
-            description='Budget laptop',
-            price=25000000,
-            stock=0,  # Out of stock
-            ram=8,
-            storage=256,
-            on_board_gpu=True,
-            gpu='Intel UHD',
-            touch_screen=False,
-            display_size=14.0,
-            thumbnail='products/thumbnails/test3.jpg'
-        )
+       
         
-        # URLs
         self.cart_detail_url = reverse('cart:cart_detail')
         self.add_item_url = reverse('cart:add_item')
         self.clear_cart_url = reverse('cart:clear_cart')
@@ -131,29 +114,150 @@ class CartViewTests(TestCase):
             format='json'
         )
     
-    def _create_cart_with_items(self, user=None, session_key=None):
-        """Helper: Create a cart with items for testing."""
-        if user:
-            cart = Cart.objects.create(user=user)
-        else:
-            cart = Cart.objects.create(session_key=session_key or 'test_session_key')
-        
-        item1 = CartItem.objects.create(
-            cart=cart,
-            product=self.product,
-            quantity=2
-        )
-        item2 = CartItem.objects.create(
-            cart=cart,
-            product=self.product2,
-            quantity=1
-        )
-        
-        return cart, item1, item2
-    
     def _create_session(self):
         """Helper: Create a session for guest user."""
         self.client.post('/')  # Initialize session
         session = self.client.session
         session.save()
         return session.session_key
+    
+
+
+    def test_get_cart_authenticated(self):
+
+        self._authenticate(self.user)
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=2)
+        self._add_item(product_slug='dell-xps-15', quantity=1)
+        
+        response = self.client.get(self.cart_detail_url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 2)
+
+
+
+    def test_get_cart_unauthenticated(self):
+
+        
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=1)
+
+        response = self.client.get(self.cart_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 1)
+
+
+
+
+
+    def test_increments_existing_item(self):
+
+        self._authenticate(self.user)
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=2)
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=1) 
+
+        response = self.client.get(self.cart_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 1)
+        item = response.data['items'][0]
+        self.assertEqual(item['quantity'], 3)
+
+
+    def test_exceeds_stock_item(self):
+
+        response = self._add_item(product_slug='dell-xps-15', quantity=4)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+      
+
+
+
+    def test_exceeds_limitation_add(self):
+
+        response = self._add_item(product_slug='asus-rog-gaming-laptop', quantity=8)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+      
+
+
+
+
+    def test_update_cart_items(self):
+
+        self._authenticate(self.user)
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=2)
+        
+        response = self.client.get(self.cart_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 1)
+        item = response.data['items'][0]
+        self.assertEqual(item['quantity'], 2)
+
+       
+
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=2)
+
+        response = self.client.get(self.cart_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 1)
+        item = response.data['items'][0]
+        self.assertEqual(item['quantity'], 4)
+
+
+        
+       
+
+
+    def test_remove_cart_items(self):
+
+        self._authenticate(self.user)
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=1)
+        self._add_item(product_slug='dell-xps-15', quantity=1)
+
+        response = self.client.get(self.cart_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 2)
+        item_id = response.data['items'][0]['id']
+       
+        deleting = self.client.delete(reverse('cart:cart_item', kwargs={'item_id':item_id}))
+        response = self.client.get(self.cart_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 1)
+        self.assertTrue(deleting)
+
+
+    
+    def test_clear_cart(self):
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=2)
+        self._add_item(product_slug='dell-xps-15', quantity=1) 
+
+        response = self.client.delete(self.clear_cart_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response)
+
+
+
+    def test_merge_carts(self):
+        
+        self._clear_auth()
+
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=3)
+        self._add_item(product_slug='dell-xps-15', quantity=1)
+
+        response = self.client.get(self.cart_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 2)
+        item1 = response.data['items'][0]
+        self.assertEqual(item1['quantity'], 3)
+        item2 = response.data['items'][1]
+        self.assertEqual(item2['quantity'], 1)
+
+
+        self._authenticate(self.user)
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=4)
+        self._add_item(product_slug='dell-xps-15', quantity=1)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 2)
+        # check the max order will be set to 5 if its more then 5
+        self.assertEqual(item1['quantity'], 5)
+        self.assertEqual(item2['quantity'], 2)
+
+    

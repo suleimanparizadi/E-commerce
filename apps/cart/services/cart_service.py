@@ -65,6 +65,13 @@ class CartService:
             return existing, "Quantity updated."
         
         else:
+           
+            success, message = CartService._check_stock(product, quantity)
+
+            if not success:
+                return False, message
+            
+
             item = CartItem.objects.create(cart=cart, product=product, quantity=quantity)
 
             return item, "Item added to cart."
