@@ -4,7 +4,7 @@ from apps.accounts.api.serializers import auth as auth_serializer
 from apps.accounts.services import registration, login, token
 from apps.accounts.permissions import IsAuthenticatedAndVerified
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from apps.cart.services.cart_service import CartService
 
 class InitiateRegistrationView(views.APIView):
 
@@ -44,6 +44,12 @@ class VerifyRegistrationView(views.APIView):
         service = registration.RegistrationsService(serializer.validated_data['phone_number'])
         result ,message = service.verify_and_create_user(serializer.validated_data['code'])
         if result:
+
+            # for merging guest cart with the user cart
+            session_key = request.session.session_key
+            if session_key:
+                CartService.merge_carts(session_key=session_key, user=result)
+
             user_token = token.generate_token(result)
 
             return Response({'message':message,
@@ -69,6 +75,11 @@ class PasswordLoginView(views.APIView):
         result, message = service.login()
 
         if result:
+
+            session_key = request.session.session_key
+            if session_key:
+                CartService.merge_carts(session_key=session_key, user=result)
+
             user_token = token.generate_token(result)
        
             return Response({'tokens':user_token, 'message':message}, status=status.HTTP_200_OK)
@@ -103,6 +114,11 @@ class VerifyLoginOTPView(views.APIView):
         
         
         if result:
+
+            session_key = request.session.session_key
+            if session_key:
+                CartService.merge_carts(session_key=session_key, user=result)
+
             user_token = token.generate_token(result)
 
             return Response({'message':message, 'tokens':user_token},
