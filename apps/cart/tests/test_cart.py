@@ -1,12 +1,11 @@
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.contrib.sessions.middleware import SessionMiddleware
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.products.models import Product, Category, CPU
-from apps.cart.models.cart import Cart, CartItem
+from apps.cart.services.cart_service import CartService
 
 User = get_user_model()
 
@@ -239,6 +238,7 @@ class CartViewTests(TestCase):
         self._clear_auth()
 
         self._add_item(product_slug='asus-rog-gaming-laptop', quantity=3)
+        
         self._add_item(product_slug='dell-xps-15', quantity=1)
 
         response = self.client.get(self.cart_detail_url)
@@ -249,15 +249,62 @@ class CartViewTests(TestCase):
         item2 = response.data['items'][1]
         self.assertEqual(item2['quantity'], 1)
 
-
+        session_key = self.client.session.session_key
         self._authenticate(self.user)
-        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=4)
+        CartService.merge_carts(session_key=session_key, user=self.user)
+
+
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=2)
         self._add_item(product_slug='dell-xps-15', quantity=1)
-        
+
+
+
+        response = self.client.get(self.cart_detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['items']), 2)
-        # check the max order will be set to 5 if its more then 5
+        item1 = response.data['items'][0]
+        item2 = response.data['items'][1]
+
         self.assertEqual(item1['quantity'], 5)
         self.assertEqual(item2['quantity'], 2)
 
     
+
+
+
+    def test_merge_carts_caps_at_max(self):
+
+        self._clear_auth()
+
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=3)
+        
+        self._add_item(product_slug='dell-xps-15', quantity=1)
+
+        response = self.client.get(self.cart_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 2)
+        item1 = response.data['items'][0]
+        self.assertEqual(item1['quantity'], 3)
+        item2 = response.data['items'][1]
+        self.assertEqual(item2['quantity'], 1)
+
+        session_key = self.client.session.session_key
+        self._authenticate(self.user)
+
+
+        self._add_item(product_slug='asus-rog-gaming-laptop', quantity=5)
+        self._add_item(product_slug='dell-xps-15', quantity=1)
+
+
+        CartService.merge_carts(session_key=session_key, user=self.user)
+
+        
+        response = self.client.get(self.cart_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 2)
+        item1 = response.data['items'][0]
+        item2 = response.data['items'][1]
+
+        # check the max order will be set to 5 if its more then 5
+        self.assertEqual(item1['quantity'], 5)
+        self.assertEqual(item2['quantity'], 2)
