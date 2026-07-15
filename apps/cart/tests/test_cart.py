@@ -270,8 +270,6 @@ class CartViewTests(TestCase):
 
     
 
-
-
     def test_merge_carts_caps_at_max(self):
 
         self._clear_auth()

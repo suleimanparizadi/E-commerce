@@ -224,4 +224,10 @@ update_fields is a optimization for save existing methods
 
 
 
-
+V2:
+Redis caching
+Notification app
+Elasticsearch
+Better search ranking
+Recommendation engine
+Analytics dashboard
