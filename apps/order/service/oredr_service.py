@@ -1,5 +1,5 @@
 from apps.order.models.order_model import Order, OrderItem
-
+from apps.cart.models.cart import Cart, CartItem
 
 class CheckoutService:
     
@@ -10,13 +10,28 @@ class CheckoutService:
 
 
     def _calculate_total(self):
-        ...
+
+        total = 0 
+        for item in self.cart.items:
+            total += item.quantity + item.product.price
+
+        return total
     
+
+
     def _create_order_items(self, order):
         ...
     
+
+
     def _deduct_stock(self):
-        ...
+
+     for item in self.cart.items.all():
+         item.product.quantity -= item.quantity
+         item.product.save(update_fields=['stock'])
+    
+    
+    
     
     def _notify_admin(self, order):
         ...
