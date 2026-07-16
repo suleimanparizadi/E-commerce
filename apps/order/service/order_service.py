@@ -71,5 +71,5 @@ class CheckoutService:
         self._notify_admin(order)
         
 
-        return order
+        return order, "Order created successfully"
     
