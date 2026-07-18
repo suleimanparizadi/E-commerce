@@ -3,8 +3,10 @@ from rest_framework.response import Response
 from apps.order.service.order_service import CheckoutService
 from apps.accounts.permissions import IsAuthenticatedAndVerified
 from apps.order.api.serializer import order_serializer
-from apps.cart.models.cart import Cart
 from apps.order.models.order_model import Order
+from apps.cart.selectors.cart_selectors import CartSelector
+from django.shortcuts import get_object_or_404
+
 
 
 
@@ -17,10 +19,10 @@ class CheckoutView(views.APIView):
         serializer = order_serializer.CheckoutSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        try:
-            user_cart = Cart.objects.get(user=request.user)
         
-        except Cart.DoesNotExist:
+        user_cart = CartSelector.get_cart_by_user(user=request.user)
+        
+        if not user_cart:
             return Response({'message':"Unable to find the cart"},
                             status=status.HTTP_400_BAD_REQUEST)
         
@@ -56,6 +58,25 @@ class ListUsersOrders(views.APIView):
         serializer = order_serializer.OrderSerializer(user_orders, many=True)
 
         return Response({'data':serializer.data}, status=status.HTTP_200_OK)
+
+
+
+
+class OrderDetailView(views.APIView):
+
+    permission_classes = [IsAuthenticatedAndVerified]
+
+    def get(self, request, order_id):
+
+       
+        user_order = get_object_or_404(Order ,user=request.user, id=order_id)
+      
+
+        serializer = order_serializer.OrderSerializer(user_order)
+
+        return Response({'data':serializer.data}, status=status.HTTP_200_OK)
+    
+
 
 
 
