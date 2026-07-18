@@ -52,7 +52,7 @@ class ListUsersOrders(views.APIView):
         user_orders = Order.objects.filter(user=request.user)
 
         if not user_orders.exists():
-            return Response([], status=status.HTTP_200_OK)
+            return Response({'data':[]}, status=status.HTTP_200_OK)
 
 
         serializer = order_serializer.OrderSerializer(user_orders, many=True)

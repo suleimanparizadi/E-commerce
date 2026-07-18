@@ -39,7 +39,9 @@ class CartItem(models.Model):
 
         constraints = [
             models.UniqueConstraint(
-                fields=['cart', 'product'],)]
+                fields=['cart', 'product'],
+                name='unique_cart_product'
+                )]
 
     def __str__(self):
         return f"{self.cart} - {self.product} - {self.quantity}"
