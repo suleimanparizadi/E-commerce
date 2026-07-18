@@ -149,3 +149,65 @@ class OrderViewTests(TestCase):
             'shipping_address': 'Valiasr Street, No 456',
             'shipping_postal_code': '0987654321'
         }
+    
+
+
+
+    def test_checkout_success(self):
+
+        self._authenticate(self.user)
+
+        data = self._get_checkout_data()
+        response = self.client.post(self.checkout_url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        order = Order.objects.filter(user=self.user).last()
+        self.assertIsNotNone(order)
+        self.assertEqual(order.total_amount, 145000000) 
+        self.assertFalse(Cart.objects.filter(user=self.user).exists())
+        
+        self.product.refresh_from_db()
+        self.product2.refresh_from_db()
+       
+        self.assertEqual(self.product.stock, 8)  
+        self.assertEqual(self.product2.stock, 4)
+
+
+    def test_checkout_unauthorized(self):
+
+
+        data = self._get_checkout_data()
+        response = self.client.post(self.checkout_url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+
+    def test_get_user_list_orders(self):
+
+        self._authenticate(self.other_user)
+        response = self.client.get(self.list_orders_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['data'], [])
+
+
+
+    def test_get_detail_order(self):
+
+        self._authenticate(self.user)
+        response = self.client.get(self.order_detail_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_clear_cart_after_checkout(self):
+
+        self._authenticate(self.user)
+
+        data = self._get_checkout_data()
+        self.client.post(self.checkout_url, data, format='json')
+
+        # check the cart is empty after checkout
+        self.assertEqual(self.cart.items.count(), 0)

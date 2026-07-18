@@ -224,6 +224,13 @@ update_fields is a optimization for save existing methods
 
 
 
+self.product.refresh_from_db()
+self.product2.refresh_from_db()
+
+# to refresh the memory before checking
+
+
+
 V2:
 Redis caching
 Notification app
@@ -231,3 +238,6 @@ Elasticsearch
 Better search ranking
 Recommendation engine
 Analytics dashboard
+
+
+
