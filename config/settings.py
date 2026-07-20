@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'silk',
     'rest_framework_simplejwt.token_blacklist',
-
+    'huggingface_hub'
 
     # Local apps
     'apps.accounts',
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'apps.reviews',
     'apps.cart',
     'apps.order',
+    'apps.assistant'
 
 
 ]
