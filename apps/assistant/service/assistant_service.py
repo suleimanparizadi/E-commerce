@@ -13,13 +13,18 @@ def build_prompt(question, faqs):
     return f"{SYSTEM_PROMPT}\n\nاطلاعات فروشگاه:\n{faq_text}\n\nسوال مشتری: {question}\nپاسخ:"
 
 
-
 def ask_ai(question, faqs):
-    prompt = build_prompt(question, faqs)
-    response = client.text_generation(
-        prompt,
+    faq_text = "\n".join([f"سوال: {faq.question}\nجواب: {faq.answer}" for faq in faqs])
+    
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": f"اطلاعات فروشگاه:\n{faq_text}\n\nسوال مشتری: {question}"}
+    ]
+    
+    response = client.chat_completion(
+        messages=messages,
         model="Qwen/Qwen2.5-7B-Instruct",
-        max_new_tokens=300,
+        max_tokens=300,
     )
-
-    return response
+    
+    return response.choices[0].message.content
