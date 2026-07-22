@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / '.evn')
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'silk',
     'rest_framework_simplejwt.token_blacklist',
-    'huggingface_hub'
+    
 
     # Local apps
     'apps.accounts',
