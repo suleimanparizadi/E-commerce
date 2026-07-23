@@ -5,7 +5,7 @@ from apps.products.selectors.product import ProductSelector
 
 client = OpenAI(
     base_url="https://api.gapgpt.app/v1",
-    api_key="sk-i47v4afdOiN04pmSoKyLdexpFeLCsmWv3g5CJFlS67bCL54Z"
+    api_key=os.getenv('GAPGPT_API_TOKEN')
 )
 
 PROMPT_PATH = os.path.join(os.path.dirname(__file__), '../prompts/main_prompt.txt')
