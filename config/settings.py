@@ -175,3 +175,29 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+
+# Storage 
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL') 
+AWS_LOCATION = 'e-commerce/'  # Folder name inside bucket
+AWS_DEFAULT_ACL = 'public-read'
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_FILE_OVERWRITE = False
+AWS_S3_FILE_OVERWRITE = True  # Allow overwrites since exists() check is disabled
+
+
+
+STORAGES = {
+    "default": {
+        "BACKEND": "config.storage.MediaStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
