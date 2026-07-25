@@ -96,6 +96,16 @@ Examples of product search requests:
 - Compare Dell and Lenovo laptops.
 - Laptop for Photoshop.
 
+
+Common search terms mapping:
+
+- "دانشجویی" or "مهندسی" → RAM at least 16GB, CPU Intel or AMD
+- "سبک" or "قابل حمل" → max_display_size 14
+- "برنامه‌نویسی" → RAM at least 16GB, storage at least 256GB
+- "اداری" or "معمولی" → RAM 8GB, price under 25000000
+- "پرچمدار" or "حرفه‌ای" → price above 40000000, RAM at least 16GB
+
+
 ────────────────────────
 After Search Results
 ────────────────────────
