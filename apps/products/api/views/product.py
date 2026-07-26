@@ -67,7 +67,7 @@ class ProductSearchOrFilterView(views.APIView):
 
             # if user didn't put the touch screen in the filter means dosn't matter
             # it will return None as false
-            # touch screen fileds must return True or False or None
+            # touch screen fields must return True or False or None
             touch_screen_param = request.query_params.get('touch_screen')
             if touch_screen_param is not None:
                 touch_screen = touch_screen_param.lower() == 'true'

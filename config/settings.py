@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'silk',
     'rest_framework_simplejwt.token_blacklist',
-    
+    'drf_yasg',
 
     # Local apps
     'apps.accounts',
@@ -211,4 +211,6 @@ STORAGES = {
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
+
+ 
 }

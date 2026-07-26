@@ -3,10 +3,20 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from debug_toolbar.toolbar import debug_toolbar_urls
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
+
+
+
+schema_view = get_schema_view(
+    openapi.Info(title="E-Commerce API", default_version='v1'),
+    public=True,
+)
 
 
 urlpatterns = [
+    path('swagger/', schema_view.with_ui('swagger'), name='swagger'),
     path('admin/', admin.site.urls),
     path('api/v1/accounts/',include('apps.accounts.api.urls', namespace='accounts')),
     path('api/v1/products/', include('apps.products.api.urls', namespace='product')),
