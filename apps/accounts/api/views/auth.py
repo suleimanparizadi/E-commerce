@@ -5,6 +5,9 @@ from apps.accounts.services import registration, login, token
 from apps.accounts.permissions import IsAuthenticatedAndVerified
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.cart.services.cart_service import CartService
+from rest_framework_simplejwt.exceptions import TokenError
+
+
 
 class InitiateRegistrationView(views.APIView):
 
@@ -146,7 +149,7 @@ class LogoutView(views.APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
 
-        except Exception:
+        except TokenError:
             return Response({"error": "Invalid token"},
                                                     status=status.HTTP_400_BAD_REQUEST)
 

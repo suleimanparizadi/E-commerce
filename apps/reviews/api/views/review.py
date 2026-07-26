@@ -100,6 +100,8 @@ class ReviewDetailView(views.APIView):
     def patch(self, request, review_id:int):
 
         review = ReviewSelector.get_review_by_id(review_id)
+        self.check_object_permissions(request, review)
+
         if not review:
             return Response({'error':'Review not found'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -113,7 +115,6 @@ class ReviewDetailView(views.APIView):
 
             return Response({'message':message}, status=status.HTTP_400_BAD_REQUEST)
 
-        self.check_object_permissions(request, review)
         serializer_data = review_serializer.ReviewListSerializer(result)
         return Response({'message':message, 'review':serializer_data.data},
                     status=status.HTTP_200_OK)
@@ -126,9 +127,10 @@ class ReviewDetailView(views.APIView):
 
         service = ReviewService(request.user)
         review = get_object_or_404(Review, id=review_id)
+        self.check_object_permissions(request, review)
+
         success, message = service.delete_review(review_id)
         
-        self.check_object_permissions(request, review)
         return Response({'message':message},
                      status=status.HTTP_200_OK if success else status.HTTP_400_BAD_REQUEST)
 

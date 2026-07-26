@@ -2,6 +2,8 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+from django.core.management.utils import get_random_secret_key
+import warnings
 
 
 
@@ -12,16 +14,35 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+if not SECRET_KEY:
+    SECRET_KEY = get_random_secret_key()
+    warnings.warn(
+        "WARNING: SECRET_KEY not found in environment. "
+        "A temporary key has been generated. Set SECRET_KEY in your .env file for production.",
+        RuntimeWarning
+    )
 
-ALLOWED_HOSTS = []
+
+
+DEBUG = os.getenv('DEBUG', 'false').lower() 
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
 
 
 # Application definition
@@ -48,6 +69,7 @@ INSTALLED_APPS = [
     'silk',
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
+    
 
     # Local apps
     'apps.accounts',
@@ -66,6 +88,7 @@ INTERNAL_IPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -146,6 +169,11 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+
 AUTH_USER_MODEL = 'accounts.User'
 
 
@@ -199,7 +227,6 @@ AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
 AWS_LOCATION = 'e-commerce/'  # Folder name inside bucket
 AWS_DEFAULT_ACL = 'public-read'
 AWS_QUERYSTRING_AUTH = False
-AWS_S3_FILE_OVERWRITE = False
 AWS_S3_FILE_OVERWRITE = True  # Allow overwrites since exists() check is disabled
 
 
@@ -214,3 +241,12 @@ STORAGES = {
 
  
 }
+
+
+
+CORS_ALLOWED_ORIGINS = os.getenv(
+    'CORS_ALLOWED_ORIGINS',
+    'http://localhost:3000,http://127.0.0.1:3000'
+).split(',')
+
+CORS_ALLOW_CREDENTIALS = True
