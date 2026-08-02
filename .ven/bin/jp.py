@@ -1,4 +1,4 @@
-#!/home/suleiman/Desktop/projects/E-commerce/.ven/bin/python3
+#!/home/suleiman/Desktop/projects/api/e_commerce/E-commerce/.ven/bin/python3
 
 import sys
 import json
