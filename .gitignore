@@ -15,6 +15,7 @@ staticfiles/
 .venv/
 venv/
 .dockerignore
+.ven
 
 
 
