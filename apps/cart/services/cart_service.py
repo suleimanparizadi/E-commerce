@@ -135,9 +135,8 @@ class CartService:
 
 
 
-
-    @transaction.atomic
     @staticmethod
+    @transaction.atomic
     def merge_carts(session_key, user):
 
         if not session_key:

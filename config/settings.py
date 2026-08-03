@@ -190,14 +190,14 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day',
-        'user': '1000/day'
-    }
+    #'DEFAULT_THROTTLE_CLASSES': [
+     #   'rest_framework.throttling.AnonRateThrottle',
+      #  'rest_framework.throttling.UserRateThrottle'
+   # ],
+    #'DEFAULT_THROTTLE_RATES': {
+     #   'anon': '100/day',
+      #  'user': '1000/day'
+   # }
 
 
 }
@@ -242,12 +242,10 @@ STORAGES = {
  
 }
 
-
-
-CORS_ALLOWED_ORIGINS = os.getenv(
-    'CORS_ALLOWED_ORIGINS',
-    'http://localhost:3000,http://127.0.0.1:3000'
-).split(',')
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -268,5 +266,4 @@ CACHES = {
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
-
 
