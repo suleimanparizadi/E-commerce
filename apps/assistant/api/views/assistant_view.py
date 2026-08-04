@@ -17,4 +17,8 @@ class ChatView(views.APIView):
 
         answer = chat(question, faq)
 
+        # Check if the response is a dict (search result with products)
+        #if isinstance(answer, dict):
+         #   return Response(answer, status=status.HTTP_200_OK)
+
         return Response({'answer':answer}, status=status.HTTP_200_OK)

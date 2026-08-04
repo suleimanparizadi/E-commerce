@@ -2,6 +2,9 @@ import os
 import json
 from openai import OpenAI
 from apps.products.selectors.product import ProductSelector
+from apps.products.api.serializer.product_serializer import ProductListSerializer
+
+
 
 client = OpenAI(
     base_url="https://api.gapgpt.app/v1",
@@ -14,21 +17,21 @@ with open(PROMPT_PATH, 'r', encoding='utf-8') as f:
     SYSTEM_PROMPT = f.read()
 
 
+
+    
 def handle_search(filters, user_message, previous_messages):
     products = ProductSelector.filter_product(**filters)
 
     if not products.exists():
-        return "متأسفم، هیچ محصولی با این مشخصات پیدا نشد. لطفاً مشخصات دیگری را امتحان کنید."
+        return {"message": "متأسفم، هیچ محصولی با این مشخصات پیدا نشد.", "products": []}
 
-    product_list = []
-    for p in products[:5]:
-        product_list.append(f"{p.brand} {p.name}: RAM:{p.ram}GB, GPU:{p.gpu}, Price:{p.price:,} Rial")
+    serializer = ProductListSerializer(products[:5], many=True)
 
-    product_text = "\n".join(product_list)
+    product_text = json.dumps(serializer.data, ensure_ascii=False)
 
     messages = previous_messages + [
         {"role": "assistant", "content": '{"action": "search"}'},
-        {"role": "user", "content": f"Search results:\n{product_text}\n\nIntroduce these products to the customer in Farsi based on their request: {user_message}"}
+        {"role": "user", "content": f"Search results (JSON):\n{product_text}\n\nIntroduce these products to the customer in Farsi based on their request: {user_message}"}
     ]
 
     response = client.chat.completions.create(
@@ -37,7 +40,10 @@ def handle_search(filters, user_message, previous_messages):
         max_tokens=400,
     )
 
-    return response.choices[0].message.content
+    return {
+        "message": response.choices[0].message.content,
+        "products": serializer.data,
+    }
 
 
 def chat(user_message, faqs):
@@ -64,3 +70,7 @@ def chat(user_message, faqs):
         pass
 
     return ai_response
+
+
+
+
