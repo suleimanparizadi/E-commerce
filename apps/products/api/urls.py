@@ -9,6 +9,5 @@ urlpatterns = [
     path('search/', product.ProductSearchOrFilterView.as_view(), name='search_product'),
     path('<slug:slug>/', product.ProductDetailView.as_view(), name='detail_product'),
 
-# just for test
 
 ]

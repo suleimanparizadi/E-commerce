@@ -30,6 +30,9 @@ class CartService:
     @staticmethod
     def _check_stock(product, requested_quantity):
 
+        if product.stock < 1:
+            return Flase, "the product is unavailable right now"
+
         if product.stock < requested_quantity:
             return False, f"only {product.stock} items left in the stock"
 

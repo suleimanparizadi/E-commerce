@@ -7,5 +7,5 @@ urlpatterns = [
     path('', cart_view.CartDetailView.as_view(), name='cart_detail'),
     path('add_item/', cart_view.AddItemView.as_view(), name='add_item'),
     path('clear/',cart_view.ClearCartView.as_view(), name='clear_cart'),
-    path('item/<int:item_id>', cart_view.CartItemView.as_view(), name='cart_item'),
+    path('item/<int:item_id>/', cart_view.CartItemView.as_view(), name='cart_item'),
 ]
