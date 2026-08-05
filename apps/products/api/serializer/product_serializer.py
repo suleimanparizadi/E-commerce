@@ -4,6 +4,8 @@ from apps.products.models.image import ProductImage
 from apps.products.models.category import Category
 
 
+
+
 class CPUSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -45,6 +47,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     cpu = CPUSummarySerializer(read_only=True)
     category = CategorySerializer(read_only=True)
 
+
     class Meta:
         model = Product
         fields = ['name', 'slug', 'brand', 'price', 'thumbnail', 
@@ -56,6 +59,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     cpu = CPUSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
+    average_rating = serializers.SerializerMethodField()
 
 
     class Meta:
@@ -65,4 +69,9 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         fields = ['name', 'slug', 'brand', 'price', 'thumbnail', 
                   'ram', 'storage', 'gpu', 'is_in_stock',
                   'description', 'cpu', 'on_board_gpu',
-                  'touch_screen', 'display_size', 'category', 'images']
+                  'touch_screen', 'display_size', 'category', 'images', 'average_rating']
+
+
+    
+    def get_average_rating(self, obj):
+        return obj.average_rating

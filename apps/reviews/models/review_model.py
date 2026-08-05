@@ -35,3 +35,6 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.comment} - {self.product} - {self.user}"
 
+    
+   
+
