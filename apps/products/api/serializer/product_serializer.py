@@ -27,7 +27,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
         model = ProductImage 
 
-        fields = ['images', 'alt_text']
+        fields = ['image', 'alt_text']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -53,7 +53,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 class ProductDetailSerializer(serializers.ModelSerializer):
 
-    image = ProductImageSerializer(many=True, read_only=True)
+    images = ProductImageSerializer(many=True, read_only=True)
     cpu = CPUSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
 
@@ -65,4 +65,4 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         fields = ['name', 'slug', 'brand', 'price', 'thumbnail', 
                   'ram', 'storage', 'gpu', 'is_in_stock',
                   'description', 'cpu', 'on_board_gpu',
-                  'touch_screen', 'display_size', 'category', 'image']
+                  'touch_screen', 'display_size', 'category', 'images']
