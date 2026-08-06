@@ -6,7 +6,7 @@ from apps.order.api.serializer import order_serializer
 from apps.order.models.order_model import Order
 from apps.cart.selectors.cart_selectors import CartSelector
 from django.shortcuts import get_object_or_404
-
+from apps.accounts.permissions import IsAdmin
 
 
 
@@ -77,6 +77,30 @@ class OrderDetailView(views.APIView):
         return Response({'data':serializer.data}, status=status.HTTP_200_OK)
     
 
+
+
+
+
+#________________Admin_____________________________
+
+class ChangeOrderStatusView(views.APIView):
+
+    permission_classes = {IsAdmin}
+
+    def patch(self, request, order_id):
+
+        order = get_object_or_404(Order, id=order_id)
+
+        new_status = request.data.get('status')
+
+        if new_status not in Order.status:
+            return Response({'message':"Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+
+        order.status=new_status
+        order.save(update_fields=['status', 'updated_at'])
+
+        return Response({'message':f"the status code is changed to {new_status}"},
+                        status=status.HTTP_200_OK)
 
 
 

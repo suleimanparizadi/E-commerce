@@ -1,5 +1,10 @@
 from rest_framework import serializers
 from .validators import PhoneNumberValidator, OTPCodeValidator, PasswordValidator
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
+
 
 
 class PasswordLoginSerializer(serializers.Serializer):
@@ -60,3 +65,16 @@ class InitiateRegistrationSerializer(serializers.Serializer):
             })
         data.pop('password_confirm', None)
         return data
+
+
+class AdminUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+
+        model = User
+        fields = [
+            'id', 'phone_number', 'first_name', 'last_name',
+            'email', 'is_active', 'is_admin', 'date_of_birth',
+            'created_at', 'last_login_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'last_login_at']

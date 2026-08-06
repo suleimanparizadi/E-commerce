@@ -22,4 +22,15 @@ urlpatterns = [
     
     # Password
     path('password/change/', profile.ChangePasswordView.as_view(), name='change_password'),
+
+
+    # Admin
+    path('admin/user_list/', auth.ListUsersView.as_view(), name='users_list'),
+    path('admin/user_detail/<int:user_id>/', auth.DetailUserView.as_view(),
+                                                            name='user_detail'),
+    path('admin/user_activation/<int:user_id>/', auth.UserToggleActiveView.as_view(),
+                                                                name='user_activation'),
+
+
+
 ]

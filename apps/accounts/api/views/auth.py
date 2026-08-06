@@ -2,11 +2,17 @@ from rest_framework import views, status
 from rest_framework.response import Response
 from apps.accounts.api.serializers import auth as auth_serializer
 from apps.accounts.services import registration, login, token
-from apps.accounts.permissions import IsAuthenticatedAndVerified
+from apps.accounts.permissions import IsAuthenticatedAndVerified, IsAdmin
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.cart.services.cart_service import CartService
 from rest_framework_simplejwt.exceptions import TokenError
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 
+
+
+
+User = get_user_model()
 
 
 class InitiateRegistrationView(views.APIView):
@@ -158,3 +164,50 @@ class LogoutView(views.APIView):
                                                         status=status.HTTP_200_OK)
 
     
+
+
+
+#_______Admin_______________________
+
+
+
+class ListUsersView(views.APIView):
+
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+
+        users = User.objects.all().order_by('-created_at')
+        serializer = auth_serializer.AdminUserSerializer(users, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class DetailUserView(views.APIView):
+
+    permission_classes = {IsAdmin}
+
+    def get(self, request, user_id):
+
+        user = get_object_or_404(User, id=user_id)
+
+        serializer = auth_serializer.AdminUserSerializer(user)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+class UserToggleActiveView(views.APIView):
+
+    permission_classes = [IsAdmin]
+
+    def post(self, request, user_id):
+
+        user = get_object_or_404(User, id=user_id)
+        user.is_active = not user.is_active
+        user.save(update_fields=['is_active', 'updated_at'])
+
+        return Response({'message':f"user {'activate' if user.is_active else 'deactivate'}"})
+
+        

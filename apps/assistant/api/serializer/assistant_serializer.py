@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from apps.assistant.models.faq import FAQ
 
 
 class ChatSerializer(serializers.Serializer):
@@ -10,3 +10,9 @@ class ChatSerializer(serializers.Serializer):
     
 
 
+class FAQSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FAQ
+
+        fields = '__all__'

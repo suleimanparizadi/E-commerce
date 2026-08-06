@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from apps.products.api.serializer import product_serializer
 from rest_framework import views, status
 from apps.products.selectors.product import ProductSelector 
-
+from apps.accounts.permissions import IsAdmin
 
 
 class ListProductView(views.APIView):
@@ -65,7 +65,7 @@ class ProductSearchOrFilterView(views.APIView):
             in_stock_only=request.query_params.get("in_stock_only", '').lower() == 'true'
 
 
-            # if user didn't put the touch screen in the filter means dosn't matter
+            # if user didn't put the touch screen in the filter means doesn't matter
             # it will return None as false
             # touch screen fields must return True or False or None
             touch_screen_param = request.query_params.get('touch_screen')
@@ -92,4 +92,47 @@ class ProductSearchOrFilterView(views.APIView):
         
 
 
+#_____________Admin________________________________
 
+class ProductCreateView(views.APIView):
+
+    permission_classes = [IsAdmin]
+    
+    def post(self, request):
+        serializer = product_serializer.AdminProductWriteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+class ProductUpdateView(views.APIView):
+
+
+    permission_classes = [IsAdmin]
+    
+    def put(self, request, slug):
+        product = ProductSelector.get_product_by_slug(slug)
+        if not product:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = product_serializer.AdminProductWriteSerializer(product, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class ProductDeleteView(views.APIView):
+
+
+    permission_classes = [IsAdmin]
+    
+    def delete(self, request, slug):
+        product = ProductSelector.get_product_by_slug(slug)
+        if not product:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        product.delete()
+        return Response({'message': 'Product deleted'}, status=status.HTTP_200_OK)

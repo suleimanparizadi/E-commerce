@@ -75,3 +75,16 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     
     def get_average_rating(self, obj):
         return obj.average_rating
+
+
+
+class AdminProductWriteSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all()
+    )
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+        read_only_fields = ['slug', 'created_at', 'updated_at']
