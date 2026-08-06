@@ -18,7 +18,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'email',
             'date_of_birth',
             'created_at',
-            'last_login_at'
+            'last_login_at',
+            'is_admin'
         ]
         read_only_fields = ['phone_number', 'created_at',
                              'last_login_at']

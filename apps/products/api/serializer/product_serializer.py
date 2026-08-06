@@ -78,6 +78,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 
 
+
+#_________Admin______________________
+
+
+
 class AdminProductWriteSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
         slug_field='slug',

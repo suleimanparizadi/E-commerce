@@ -83,6 +83,26 @@ class OrderDetailView(views.APIView):
 
 #________________Admin_____________________________
 
+
+
+class ListAllOrdersView(views.APIView):
+
+    permission_classes = [IsAdmin]
+
+
+    def get(self, request):
+
+        orders = Order.objects.all().order_by('created_at')
+        serializer = order_serializer.OrderSerializer(orders, many=True)
+
+        return Response({'data':serializer.data}, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
 class ChangeOrderStatusView(views.APIView):
 
     permission_classes = {IsAdmin}

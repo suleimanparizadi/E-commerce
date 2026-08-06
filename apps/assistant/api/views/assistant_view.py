@@ -30,6 +30,18 @@ class ChatView(views.APIView):
 
 
 
+class FAQListView(views.APIView):
+
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+
+        faqs = FAQ.objects.all().order_by('-id')
+        serializer = assistant_serializer.FAQSerializer(faqs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 class CreateFAQView(views.APIView):
 
     permission_classes = [IsAdmin]

@@ -3,7 +3,8 @@ from apps.products.api.serializer import product_serializer
 from rest_framework import views, status
 from apps.products.selectors.product import ProductSelector 
 from apps.accounts.permissions import IsAdmin
-
+from apps.products.models.products import CPU
+from apps.products.models.category import Category
 
 class ListProductView(views.APIView):
 
@@ -136,3 +137,34 @@ class ProductDeleteView(views.APIView):
         
         product.delete()
         return Response({'message': 'Product deleted'}, status=status.HTTP_200_OK)
+
+
+
+
+class GetCPUView(views.APIView):
+
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+
+        cpu = CPU.objects.all()
+
+        serializer = product_serializer.CPUSummarySerializer(cpu, many=True)
+
+        return Response({'data':serializer.data}, status=status.HTTP_200_OK)
+
+
+
+
+
+class GetCategoryView(views.APIView):
+
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+
+        category = Category.objects.all()
+
+        serializer = product_serializer.CategorySerializer(category, many=True)
+
+        return Response({'data':serializer.data}, status=status.HTTP_200_OK)
