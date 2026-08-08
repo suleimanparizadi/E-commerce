@@ -11,16 +11,16 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'status', 'total_amount', 'shipping_city', 'created_at']
+    list_display = [ 'user', 'status', 'total_amount', 'shipping_city', 'created_at']
     list_filter = ['status', 'created_at', 'shipping_city']
-    search_fields = ['id', 'user__phone_number', 'user__first_name', 'user__last_name']
+    search_fields = [ 'user__phone_number', 'user__first_name', 'user__last_name']
     readonly_fields = ['user', 'total_amount', 'created_at', 'updated_at']
     inlines = [OrderItemInline]
     ordering = ['-created_at']
     
     fieldsets = (
         ('Order Info', {
-            'fields': ('id', 'user', 'status', 'total_amount')
+            'fields': ( 'user', 'status', 'total_amount')
         }),
         ('Shipping', {
             'fields': ('shipping_city', 'shipping_address', 'shipping_postal_code')

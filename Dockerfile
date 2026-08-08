@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.12-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -6,21 +6,21 @@ ENV APP_HOME=/app
 
 WORKDIR $APP_HOME
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    netcat-traditional \
-    && rm -rf /var/lib/apt/lists/*
-    
+# Install dependencies using Alpine's apk (much faster)
+RUN apk add --no-cache \
+    postgresql-dev \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    openssl-dev \
+    netcat-openbsd
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 8000
-
 ENTRYPOINT ["/entrypoint.sh"]

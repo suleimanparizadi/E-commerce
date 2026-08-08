@@ -55,7 +55,7 @@ def chat(user_message, faqs):
     ]
 
     response = client.chat.completions.create(
-        model="deepseek-v4-flash",
+        model="qwen3-235b-a22b-instruct-2507",
         messages=messages,
         max_tokens=300,
     )

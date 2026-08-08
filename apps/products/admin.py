@@ -2,6 +2,16 @@ from django.contrib import admin
 from apps.products.models.products import Product, CPU
 from apps.products.models.category import Category
 from apps.products.models.image import ProductImage
+from apps.reviews.models.review_model import Review
+
+
+
+class ReviewInline(admin.TabularInline):
+    model = Review
+    fields = ['user', 'rating', 'comment', 'created_at']
+    readonly_fields = ['created_at']
+    extra = 0
+    can_delete = True
 
 
 class ProductImageInline(admin.TabularInline):
@@ -12,11 +22,12 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+
     list_display = ['name', 'brand', 'category', 'price', 'stock', 'is_active', 'created_at']
     list_filter = ['category', 'brand', 'is_active', 'on_board_gpu', 'touch_screen', 'cpu__manufacturer']
     search_fields = ['name', 'brand', 'description']
     prepopulated_fields = {'slug': ('name', 'brand')}
-    inlines = [ProductImageInline]
+    inlines = [ProductImageInline, ReviewInline]      
     readonly_fields = ['created_at', 'updated_at']
     
     fieldsets = (
@@ -35,7 +46,7 @@ class ProductAdmin(admin.ModelAdmin):
         ('Dates', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
-        }),
+        }), 
     )
 
 

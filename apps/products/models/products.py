@@ -75,8 +75,10 @@ class Product(models.Model):
     
     @property
     def average_rating(self):
-        return self.reviews.aggregate(avg=models.Avg('rating'))['avg']
-
+        average = self.reviews.aggregate(avg=models.Avg('rating'))['avg']
+        if average is None:
+            return None
+        return round(average, 1)
 
 
 
