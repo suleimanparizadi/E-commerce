@@ -31,7 +31,6 @@ class CheckoutService:
     
 
     def _deduct_stock(self):
-
      for item in self.items:
          item.product.stock -= item.quantity
          item.product.save(update_fields=['stock'])
@@ -72,4 +71,3 @@ class CheckoutService:
         
 
         return order, "Order created successfully"
-    
