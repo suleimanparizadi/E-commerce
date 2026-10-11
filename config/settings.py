@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'apps.cart',
     'apps.order',
     'apps.assistant'
+    'apps.notifications'
 
 
 ]

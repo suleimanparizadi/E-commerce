@@ -1,4 +1,5 @@
 from apps.order.models.order_model import Order, OrderItem
+from apps.notifications.service.telegram import TelegramNotifier
 from django.db import transaction 
 
 class CheckoutService:
@@ -66,7 +67,17 @@ class CheckoutService:
         
         self.cart.delete()
 
-        
+
+
+        message = (
+            f"🛒 <b>New Order #{order.id}</b>\n\n"
+            f"👤 User: {order.user.first_name} {order.user.last_name}\n"
+            f"📱 Phone: {order.user.phone_number}\n"
+            f"💰 Total: {order.total_amount:,} Rial\n"
+            f"📍 City: {order.shipping_city}\n"
+            f"📦 Items: {order.order_items.count()}"
+        )
+        TelegramNotifier.send(message)
         self._notify_admin(order)
         
 

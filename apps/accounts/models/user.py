@@ -39,7 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_login_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)   
-
+    telegram_chat_id = models.BigIntegerField(null=True, blank=True)
     terms_accepted = models.BooleanField(default=False)
     terms_accepted_at = models.DateTimeField(null=True, blank=True)
 

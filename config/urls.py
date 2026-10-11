@@ -27,6 +27,8 @@ urlpatterns = [
     path('api/v1/cart/', include('apps.cart.api.urls', namespace='cart')),
     path('api/v1/order/', include('apps.order.api.urls', namespace='order')),
     path('api/v1/assistant/', include('apps.assistant.api.urls', namespace='chat')),
+   path('api/v1/notifications/', include('apps.notifications.api.urls', namespace='notifications')),
+   
     path(
         'api/v1/token/',
         TokenObtainPairView.as_view(),
