@@ -1,6 +1,8 @@
 from django.urls import path
 from apps.menu.api.views.menu_view import MenuView, SectionView, ItemView, MenuAnalyticView
 
+app_name = 'menu'
+
 
 urlpatterns = [
     path('menus/', MenuView.as_view(), name='menu_list_create'),
