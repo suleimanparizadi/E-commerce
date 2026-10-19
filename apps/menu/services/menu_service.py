@@ -1,7 +1,7 @@
 from apps.menu.models import menu_model
 from utils.service_result import ServiceResult
-
-
+from django.db import transaction
+from apps.menu.tasks import generate_qr_code
 
 
 class MenuService:
@@ -10,7 +10,7 @@ class MenuService:
         self.user = user
 
 
-
+    @transaction.atomic
     def create_menu(self, title, description=None):
 
     
@@ -26,9 +26,16 @@ class MenuService:
             order=0
         )
 
+
         if menu:
 
-            menu.generate_qr_code()
+            # means its only works when the database transaction successfully commits.  
+            transaction.on_commit(
+                
+                # just to give is as attribute not to execute  
+                lambda:generate_qr_code.delay(menu.id)
+            )
+
 
             return ServiceResult.success(
                 data={'menu':menu,

@@ -1,9 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.core.files.base import ContentFile
-from io import BytesIO
-from django.conf import settings
-import qrcode
 
 
 
@@ -21,20 +17,6 @@ class QRMenu(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
-
-    def generate_qr_code(self):
-        qr_data = f"{settings.QR_MENU_BASE_URL}/menu/{self.id}/"
-        qr_image = qrcode.make(qr_data)
-        qr_io = BytesIO()
-        qr_image.save(qr_io, 'PNG')
-        filename = f"menu-{self.id}.png"
-
-        if self.qr_code and self.qr_code.storage.exists(self.qr_code.name):
-            self.qr_code.delete(save=False)
-
-        self.qr_code.save(filename, ContentFile(qr_io.getvalue()), save=True)
-        qr_io.close()
 
     def __str__(self):
         return f"{self.title} - {self.id}"
