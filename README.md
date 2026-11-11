@@ -1,45 +1,84 @@
 # E-Commerce API
 
-A production-ready e-commerce backend API built with Django REST Framework.
+A complete e-commerce backend for a laptop store, built with Django REST Framework. Includes user authentication, product catalog with search and filtering, shopping cart, reviews, order checkout, an AI-powered Farsi chat assistant, and a custom React admin panel.
+
+The frontend is a separate React app that consumes this API.
+
+---
 
 ## Features
 
-- **User Authentication** — Phone-based registration with OTP verification, JWT tokens
-- **Product Catalog** — Full-text search (PostgreSQL), filtering by specs, price, brand
-- **Shopping Cart** — Guest cart with session support, merge on login
-- **Reviews** — Rating and comments with purchase verification
-- **Order Checkout** — Stock deduction, price snapshot, cart clearing
-- **AI Assistant** — Natural language product search and FAQ answering (Farsi)
+### Authentication
+- Phone-number-based registration with OTP verification
+- Login with either password or OTP
+- JWT access and refresh tokens
+- Password change for authenticated users
+- Phone numbers validated for Iranian format (`09xxxxxxxxx`)
+
+### Products
+- Product catalog with categories, CPUs, specifications, and multiple gallery images
+- Full-text search in Farsi using PostgreSQL `SearchVector`
+- 12+ filters: brand, category, RAM, storage, GPU, CPU manufacturer, price range, display size, touchscreen, in-stock
+- Pagination on all listing endpoints
+- Average rating calculated from reviews
+
+### Cart
+- Supports guest carts (session-based) and authenticated carts
+- Guest cart merges into the user cart on login
+- Stock validation when adding or updating items
+- Max 5 units per product per cart
+
+### Reviews
+- One review per user per product (enforced at the database level)
+- Rating from 1 to 5 plus optional comment
+- Only users with a completed purchase can review (verified-purchase check)
+- Admin moderation via custom permission class
+
+### Orders
+- Checkout creates an order from the current cart
+- Product price is snapshotted at purchase time so price changes don't alter history
+- Stock is deducted atomically with the order creation
+- Cart is cleared after successful checkout
+- Order status flow: Pending → Confirmed → Shipped → Delivered → Canceled
+- Address is stored on the order (not on the user), so past orders remain accurate
+
+### AI Assistant
+- Farsi chat assistant for the laptop store
+- Answers FAQ questions using stored FAQ data
+- Converts natural language requests into product filters ("لپ‌تاپ گیمینگ زیر ۵۰ میلیون" → `category: gaming, max_price: 50000000`)
+- Returns product results as structured JSON so the frontend can render cards
+- System prompt restricts the assistant to store-related topics only
+
+### Admin Panel
+- Custom React dashboard (not Django admin)
+- Manage products, orders, users, reviews, and FAQs
+- Change order status
+- Activate/deactivate users
+
+### Notifications
+- Telegram notifications for new orders
+- Low stock alerts sent to connected admins
+
+### Cloud Storage
+- Product images stored on S3-compatible storage (ParsPack)
+- Custom storage class handles a bucket permission quirk
+
+---
 
 ## Tech Stack
 
-- Python 3.12 / Django 6.0 / Django REST Framework
-- PostgreSQL with full-text search
-- JWT Authentication (Simple JWT)
-- S3-compatible cloud storage
-- Hugging Face / OpenAI API for AI chat
-- Redis for sessions
+| Layer | Technology |
+|-------|-----------|
+| Backend | Python, Django, Django REST Framework |
+| Database | PostgreSQL (with full-text search) |
+| Cache / Sessions | Redis |
+| Auth | Simple JWT |
+| AI | OpenAI-compatible API (GapGPT) with Qwen models |
+| Storage | S3-compatible (ParsPack) |
+| Frontend | React + Axios |
+| Container | Docker |
+| Docs | Swagger (drf-yasg) |
 
-## Installation
+---
 
-git clone https://github.com/suleimanparizadi/E-commerce.git
-cd E-commerce
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
-
-Create a .env file in the project root:
-
-SECRET_KEY=your_secret_key
-DEBUG=True
-DB_NAME=your_db
-DB_USER=your_user
-DB_PASSWORD=your_password
-DB_HOST=localhost
-DB_PORT=5432
-AWS_ACCESS_KEY_ID=your_key
-AWS_SECRET_ACCESS_KEY=your_secret
-AWS_STORAGE_BUCKET_NAME=your_bucket
-AWS_S3_ENDPOINT_URL=your_endpoint
-GAPGPT_API_TOKEN=your_ai_token
+## Project Structure
